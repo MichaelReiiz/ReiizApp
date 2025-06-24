@@ -59,12 +59,17 @@ def gerar_pdf(time1, time2, vencedor, placar, justificativa):
 
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=12)
+    
+    # Remover emojis e acentos do texto (ou usar texto simples)
+    texto_justo = justificativa.encode("ascii", "ignore").decode("ascii")
+
     pdf.multi_cell(0, 10, f"Jogo: {time1} vs {time2}")
-    pdf.multi_cell(0, 10, f"Placar provável: {placar}")
-    pdf.multi_cell(0, 10, f"Vencedor provável: {vencedor}")
-    pdf.multi_cell(0, 10, justificativa)
+    pdf.multi_cell(0, 10, f"Placar provavel: {placar}")
+    pdf.multi_cell(0, 10, f"Vencedor provavel: {vencedor}")
+    pdf.multi_cell(0, 10, texto_justo)
     
     return pdf.output(dest='S').encode('latin1')
+
 
 def gerar_download_pdf(pdf_data):
     b64 = base64.b64encode(pdf_data).decode()
