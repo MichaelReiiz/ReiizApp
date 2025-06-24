@@ -84,11 +84,11 @@ st.set_page_config(page_title="ReiizApp", layout="centered")
 st.markdown("""
     <style>
         body {
-            background-color: #000000;
+            background-color: #1e1e1e;
             color: #ffffff;
         }
         .stApp {
-            background-color: #111111;
+            background-color: #1e1e1e;
         }
         .css-1v0mbdj {
             background-color: #1a1a1a;
