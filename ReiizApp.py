@@ -112,8 +112,9 @@ st.title("🔴⚫ ReiizApp – Palpites Esportivos com IA")
 
 st.markdown("🎯 Gere palpites com análise lógica baseada em estatísticas simuladas.")
 
-time1 = st.text_input("Digite o nome do Time 1", "Flamengo")
-time2 = st.text_input("Digite o nome do Time 2", "Palmeiras")
+time1 = st.text_input("Digite o nome do Time 1")
+time2 = st.text_input("Digite o nome do Time 2")
+
 
 if st.button("Gerar Palpite"):
     dados1 = simular_dados_do_time(time1)
