@@ -150,7 +150,8 @@ if st.button("Gerar Palpite"):
     st.subheader("📝 Palpite Gerado")
     st.success(f"✅ Vitória provável: {vencedor}")
     st.info(f"🔢 Placar provável: {placar}")
-    st.markdown(justificativa)
+    st.text_area("📋 Justificativa do Palpite", justificativa, height=200)
+
 
 
 
