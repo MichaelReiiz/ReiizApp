@@ -122,8 +122,6 @@ if st.button("Gerar Palpite"):
     else:
         # continua normalmente
 
-    dados1 = simular_dados_do_time(time1)
-    dados2 = simular_dados_do_time(time2)
 
     vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
 
