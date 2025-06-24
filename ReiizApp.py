@@ -117,6 +117,11 @@ time2 = st.text_input("Digite o nome do Time 2")
 
 
 if st.button("Gerar Palpite"):
+    if not time1 or not time2:
+        st.warning("⚠️ Por favor, digite o nome dos dois times.")
+    else:
+        # continua normalmente
+
     dados1 = simular_dados_do_time(time1)
     dados2 = simular_dados_do_time(time2)
 
