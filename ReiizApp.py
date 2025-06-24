@@ -83,20 +83,30 @@ st.set_page_config(page_title="ReiizApp", layout="centered")
 # Estilo customizado com fundo preto/vermelho
 st.markdown("""
     <style>
-    body {
-        background-color: #1e1e1e;
-        color: #ffffff;
-    }
-    .stApp {
-        background-color: #1e1e1e;
-    }
-    .stButton>button {
-        color: white;
-        background-color: #e50914;
-    }
-</style>
-
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        .stApp {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader {
+            color: #333333 !important;
+        }
+        .stButton>button {
+            color: white;
+            background-color: #e50914;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            font-weight: bold;
+        }
+        .stTable td {
+            color: #333333;
+        }
+    </style>
 """, unsafe_allow_html=True)
+
 
 st.title("🔴⚫ ReiizApp – Palpites Esportivos com IA")
 
