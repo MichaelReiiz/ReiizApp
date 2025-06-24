@@ -150,7 +150,8 @@ if st.button("Gerar Palpite"):
     st.subheader("📝 Palpite Gerado")
     st.success(f"✅ Vitória provável: {vencedor}")
     st.info(f"🔢 Placar provável: {placar}")
-    st.text(justificativa)
+   st.markdown(justificativa)
+
 
     # Geração do PDF
     pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
