@@ -125,6 +125,12 @@ if st.button("Gerar Palpite"):
 
         vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
 
+        st.subheader("📝 Palpite Gerado")
+        st.success(f"✅ Vitória provável: {vencedor}")
+        st.info(f"🔢 Placar provável: {placar}")
+        st.text_area("📋 Justificativa do Palpite", justificativa, height=200)
+
+
         # ... [continua normalmente com a geração do palpite]
 
 
