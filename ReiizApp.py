@@ -42,4 +42,28 @@ def gerar_palpite(time_a, time_b):
 
     justificativa = f"""
 Análise Inteligente:
-- {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {ti_]()]()
+- {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {time_a['media_cartoes']}, Desfalques: {time_a['desfalques']}, Score: {round(score_a, 2)}
+- {time_b['nome']} → Gols: {time_b['media_gols']}, Escanteios: {time_b['media_escanteios']}, Cartões: {time_b['media_cartoes']}, Desfalques: {time_b['desfalques']}, Score: {round(score_b, 2)}
+
+Resultado provável com base nas estatísticas: {vencedor}
+"""
+    return vencedor, placar, justificativa
+
+# ---------- Geração de PDF ---------- #
+
+def gerar_pdf(time1, time2, vencedor, placar, justificativa):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.set_text_color(220, 50, 50)
+    pdf.cell(200, 10, "Palpite Gerado por ReiizApp", ln=True, align="C")
+
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("Arial", size=12)
+
+    texto_limpo = justificativa.encode("ascii", "ignore").decode("ascii")  # remove emojis/acentos
+
+    pdf.multi_cell(0, 10, f"Jogo: {time1} vs {time2}")
+    pdf.multi_cell(0, 10, f"Placar provável: {placar}")
+    pdf.multi_cell(0, 10, f"Vencedor provável: {vencedor}")
+    pdf.multi_cell(0, 10, texto_limpo)
