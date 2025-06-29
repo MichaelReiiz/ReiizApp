@@ -49,7 +49,6 @@ Resultado provável com base nas estatísticas: {vencedor}
 """
     return vencedor, placar, justificativa
 
-
 # ---------- Geração de PDF ---------- #
 
 def gerar_pdf(time1, time2, vencedor, placar, justificativa):
@@ -68,3 +67,46 @@ def gerar_pdf(time1, time2, vencedor, placar, justificativa):
     pdf.multi_cell(0, 10, f"Placar provável: {placar}")
     pdf.multi_cell(0, 10, f"Vencedor provável: {vencedor}")
     pdf.multi_cell(0, 10, texto_limpo)
+
+    return pdf.output(dest='S').encode('latin1')
+
+def gerar_download_pdf(pdf_data):
+    b64 = base64.b64encode(pdf_data).decode()
+    link = f'<a href="data:application/pdf;base64,{b64}" download="palpite_reiizapp.pdf">📄 Baixar Palpite em PDF</a>'
+    return link
+
+# ---------- Interface com Streamlit ---------- #
+
+st.set_page_config(page_title="ReiizApp", layout="centered")
+
+# CSS para fundo branco e letras cinza escuro
+st.markdown("""
+    <style>
+        body, .stApp {
+            background-color: white !important;
+            color: #333333 !important;
+        }
+        /* Botão vermelho com texto branco */
+        div.stButton > button {
+            background-color: #e50914;
+            color: white;
+            border-radius: 4px;
+            padding: 0.5em 1em;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.title("ReiizApp – Palpites Esportivos com IA")
+st.markdown("Gere palpites com análise lógica baseada em estatísticas simuladas.")
+
+# Entrada dos times
+time1 = st.text_input("Digite o nome do Time 1")
+time2 = st.text_input("Digite o nome do Time 2")
+
+# Botão
+if st.button("Gerar Palpite"):
+    if not time1 or not time2:
+        st.warning("⚠️ Por favor, digite o nome dos dois times.")
+    else:
+        dados1 = simular_dados_do_time(time1)
+        dados2 = simular_dado_
