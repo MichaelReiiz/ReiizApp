@@ -49,6 +49,7 @@ Resultado provável com base nas estatísticas: {vencedor}
 """
     return vencedor, placar, justificativa
 
+
 # ---------- Geração de PDF ---------- #
 
 def gerar_pdf(time1, time2, vencedor, placar, justificativa):
