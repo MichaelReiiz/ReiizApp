@@ -56,20 +56,18 @@ def gerar_pdf(time1, time2, vencedor, placar, justificativa):
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(220, 50, 50)
     pdf.cell(200, 10, f"Palpite Gerado por ReiizApp", ln=True, align="C")
-
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=12)
-    
-    # Remover emojis e acentos do texto (ou usar texto simples)
+
+    # Remover caracteres que causam erro em PDF
     texto_justo = justificativa.encode("ascii", "ignore").decode("ascii")
 
     pdf.multi_cell(0, 10, f"Jogo: {time1} vs {time2}")
-    pdf.multi_cell(0, 10, f"Placar provavel: {placar}")
-    pdf.multi_cell(0, 10, f"Vencedor provavel: {vencedor}")
+    pdf.multi_cell(0, 10, f"Placar provável: {placar}")
+    pdf.multi_cell(0, 10, f"Vencedor provável: {vencedor}")
     pdf.multi_cell(0, 10, texto_justo)
     
     return pdf.output(dest='S').encode('latin1')
-
 
 def gerar_download_pdf(pdf_data):
     b64 = base64.b64encode(pdf_data).decode()
@@ -80,7 +78,7 @@ def gerar_download_pdf(pdf_data):
 
 st.set_page_config(page_title="ReiizApp", layout="centered")
 
-# Estilo customizado com fundo preto/vermelho
+# Visual limpo com fundo claro
 st.markdown("""
     <style>
         body {
@@ -89,24 +87,16 @@ st.markdown("""
         }
         .stApp {
             background-color: #ffffff;
-            color: #333333;
-        }
-        .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader {
-            color: #333333 !important;
         }
         .stButton>button {
             color: white;
             background-color: #e50914;
-            border-radius: 8px;
-            padding: 0.5em 1em;
-            font-weight: bold;
         }
-        .stTable td {
+        .stMarkdown, .stText, .stTable td {
             color: #333333;
         }
     </style>
 """, unsafe_allow_html=True)
-
 
 st.title("🔴⚫ ReiizApp – Palpites Esportivos com IA")
 
@@ -114,7 +104,6 @@ st.markdown("🎯 Gere palpites com análise lógica baseada em estatísticas si
 
 time1 = st.text_input("Digite o nome do Time 1")
 time2 = st.text_input("Digite o nome do Time 2")
-
 
 if st.button("Gerar Palpite"):
     if not time1 or not time2:
@@ -125,36 +114,30 @@ if st.button("Gerar Palpite"):
 
         vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
 
-    # ... [continua normalmente com a geração do palpite]
+        # Últimos 5 jogos com emojis
+        emoji = {"V": "✅", "E": "➖", "D": "❌"}
+        ult1 = " ".join([emoji[r] for r in dados1["ultimos_5_jogos"]])
+        ult2 = " ".join([emoji[r] for r in dados2["ultimos_5_jogos"]])
 
+        st.subheader("📊 Comparativo dos Times")
+        df = pd.DataFrame({
+            "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
+            time1: [
+                dados1["media_gols"], dados1["media_escanteios"],
+                dados1["media_cartoes"], dados1["desfalques"], ult1
+            ],
+            time2: [
+                dados2["media_gols"], dados2["media_escanteios"],
+                dados2["media_cartoes"], dados2["desfalques"], ult2
+            ]
+        })
+        st.table(df)
 
-    # Últimos 5 jogos com emojis
-    emoji = {"V": "✅", "E": "➖", "D": "❌"}
-    ult1 = " ".join([emoji[r] for r in dados1["ultimos_5_jogos"]])
-    ult2 = " ".join([emoji[r] for r in dados2["ultimos_5_jogos"]])
+        st.subheader("📝 Palpite Gerado")
+        st.success(f"✅ Vitória provável: {vencedor}")
+        st.info(f"🔢 Placar provável: {placar}")
+        st.text_area("📋 Justificativa do Palpite", justificativa, height=200)
 
-    st.subheader("📊 Comparativo dos Times")
-    df = pd.DataFrame({
-        "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
-        time1: [
-            dados1["media_gols"], dados1["media_escanteios"],
-            dados1["media_cartoes"], dados1["desfalques"], ult1
-        ],
-        time2: [
-            dados2["media_gols"], dados2["media_escanteios"],
-            dados2["media_cartoes"], dados2["desfalques"], ult2
-        ]
-    })
-    st.table(df)
-
-    st.subheader("📝 Palpite Gerado")
-    st.success(f"✅ Vitória provável: {vencedor}")
-    st.info(f"🔢 Placar provável: {placar}")
-    st.text_area("📋 Justificativa do Palpite", justificativa, height=200)
-
-
-
-
-    # Geração do PDF
-    pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
-    st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
+        # Geração do PDF
+        pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
+        st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
