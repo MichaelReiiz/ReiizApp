@@ -41,11 +41,11 @@ def gerar_palpite(time_a, time_b):
         placar = f"{random.randint(1, 2)}x{random.randint(1, 2)}"
 
     justificativa = f"""
-🤖 Análise Inteligente:
+Análise Inteligente:
 - {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {time_a['media_cartoes']}, Desfalques: {time_a['desfalques']}, Score: {round(score_a, 2)}
 - {time_b['nome']} → Gols: {time_b['media_gols']}, Escanteios: {time_b['media_escanteios']}, Cartões: {time_b['media_cartoes']}, Desfalques: {time_b['desfalques']}, Score: {round(score_b, 2)}
 
-👉 Resultado provável com base nas estatísticas: {vencedor}
+Resultado provável com base nas estatísticas: {vencedor}
 """
     return vencedor, placar, justificativa
 
@@ -56,10 +56,11 @@ def gerar_pdf(time1, time2, vencedor, placar, justificativa):
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(220, 50, 50)
     pdf.cell(200, 10, f"Palpite Gerado por ReiizApp", ln=True, align="C")
+
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=12)
-
-    # Remover caracteres que causam erro em PDF
+    
+    # Remover emojis e acentos do PDF
     texto_justo = justificativa.encode("ascii", "ignore").decode("ascii")
 
     pdf.multi_cell(0, 10, f"Jogo: {time1} vs {time2}")
@@ -78,22 +79,18 @@ def gerar_download_pdf(pdf_data):
 
 st.set_page_config(page_title="ReiizApp", layout="centered")
 
-# Visual limpo com fundo claro
+# Estilo visual: fundo branco e botão vermelho
 st.markdown("""
     <style>
-        body {
-            background-color: #ffffff;
-            color: #333333;
-        }
         .stApp {
             background-color: #ffffff;
         }
         .stButton>button {
             color: white;
             background-color: #e50914;
-        }
-        .stMarkdown, .stText, .stTable td {
-            color: #333333;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            font-weight: bold;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -113,11 +110,11 @@ if st.button("Gerar Palpite"):
         dados2 = simular_dados_do_time(time2)
 
         vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
+        justificativa = justificativa.encode("ascii", "ignore").decode("ascii")  # remove emojis para celular fraco
 
-        # Últimos 5 jogos com emojis
-        emoji = {"V": "✅", "E": "➖", "D": "❌"}
-        ult1 = " ".join([emoji[r] for r in dados1["ultimos_5_jogos"]])
-        ult2 = " ".join([emoji[r] for r in dados2["ultimos_5_jogos"]])
+        # Últimos 5 jogos (sem emojis para Android fraco)
+        ult1 = " ".join(dados1["ultimos_5_jogos"])
+        ult2 = " ".join(dados2["ultimos_5_jogos"])
 
         st.subheader("📊 Comparativo dos Times")
         df = pd.DataFrame({
@@ -136,7 +133,8 @@ if st.button("Gerar Palpite"):
         st.subheader("📝 Palpite Gerado")
         st.success(f"✅ Vitória provável: {vencedor}")
         st.info(f"🔢 Placar provável: {placar}")
-        st.text_area("📋 Justificativa do Palpite", justificativa, height=200)
+        st.markdown("📋 **Justificativa do Palpite**")
+        st.markdown(justificativa)
 
         # Geração do PDF
         pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
