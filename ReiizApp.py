@@ -42,5 +42,4 @@ def gerar_palpite(time_a, time_b):
 
     justificativa = f"""
 Análise Inteligente:
-- {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {time_a['media_cartoes']}, Desfalques: {time_a['desfalques']}, Score: {round(score_a, 2)}
-- {time_b['nome']}_
+- {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {ti_]()]()
