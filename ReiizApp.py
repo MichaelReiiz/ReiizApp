@@ -111,7 +111,6 @@ if st.button("Gerar Palpite"):
 
         vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
 
-        # Últimos 5 jogos sem emojis para evitar erros no celular
         ult1 = " ".join(dados1["ultimos_5_jogos"])
         ult2 = " ".join(dados2["ultimos_5_jogos"])
 
@@ -130,11 +129,16 @@ if st.button("Gerar Palpite"):
         st.table(df)
 
         st.subheader("Palpite Gerado")
-        st.success(f"Vitória provável: {vencedor}")
-        st.info(f"Placar provável: {placar}")
-        st.markdown("**Justificativa do Palpite:**")
-        st.markdown(justificativa)
 
-        # Gerar PDF e exibir link para download
+        resultado_md = f"""
+**Vitória provável:** {vencedor}  
+**Placar provável:** {placar}  
+
+**Justificativa do Palpite:**  
+{justificativa}
+"""
+        st.write(resultado_md)
+
         pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
         st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
+
