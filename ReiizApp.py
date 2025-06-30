@@ -114,32 +114,36 @@ if st.button("Gerar Palpite"):
         ult1 = " ".join(dados1["ultimos_5_jogos"])
         ult2 = " ".join(dados2["ultimos_5_jogos"])
 
-        st.subheader("Comparativo dos Times")
-        data = {
-            "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
-            f"{time1}": [
-                dados1["media_gols"], dados1["media_escanteios"],
-                dados1["media_cartoes"], dados1["desfalques"], ult1
-            ],
-            f"{time2}": [
-                dados2["media_gols"], dados2["media_escanteios"],
-                dados2["media_cartoes"], dados2["desfalques"], ult2
-            ]
-        }
-        df = pd.DataFrame(data)
-        st.table(df)  # Ou use st.dataframe(df) se preferir com rolagem no celular
+        st.markdown("---")
+        st.subheader("📊 Comparativo dos Times")
 
-        st.subheader("Palpite Gerado")
-        resultado_md = f"""
-**Vitória provável:** {vencedor}  
-**Placar provável:** {placar}  
+        estatisticas = [
+            ("Gols", dados1["media_gols"], dados2["media_gols"]),
+            ("Escanteios", dados1["media_escanteios"], dados2["media_escanteios"]),
+            ("Cartões", dados1["media_cartoes"], dados2["media_cartoes"]),
+            ("Desfalques", dados1["desfalques"], dados2["desfalques"]),
+            ("Últimos 5 Jogos", ult1, ult2)
+        ]
 
-**Justificativa do Palpite:**  
-{justificativa}
-"""
-        st.write(resultado_md)
+        for stat, val1, val2 in estatisticas:
+            col1, col2, col3 = st.columns([2, 4, 4])
+            with col1:
+                st.markdown(f"**{stat}**")
+            with col2:
+                st.markdown(f"{time1}: `{val1}`")
+            with col3:
+                st.markdown(f"{time2}: `{val2}`")
+
+        st.markdown("---")
+        st.subheader("🎯 Palpite Gerado")
+
+        st.markdown(f"**Vitória provável:** `{vencedor}`")
+        st.markdown(f"**Placar provável:** `{placar}`")
+        st.markdown("**Justificativa:**")
+        st.markdown(f"<div style='white-space: pre-wrap;'>{justificativa}</div>", unsafe_allow_html=True)
 
         pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
         st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
+
 
 
