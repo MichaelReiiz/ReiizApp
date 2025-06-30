@@ -114,28 +114,22 @@ if st.button("Gerar Palpite"):
         ult1 = " ".join(dados1["ultimos_5_jogos"])
         ult2 = " ".join(dados2["ultimos_5_jogos"])
 
-       st.subheader("Comparativo dos Times")
-
-data = {
-    "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
-    f"{time1}": [
-        dados1["media_gols"], dados1["media_escanteios"],
-        dados1["media_cartoes"], dados1["desfalques"],
-        ult1
-    ],
-    f"{time2}": [
-        dados2["media_gols"], dados2["media_escanteios"],
-        dados2["media_cartoes"], dados2["desfalques"],
-        ult2
-    ],
-}
-
-df = pd.DataFrame(data)
-
-st.table(df)
+        st.subheader("Comparativo dos Times")
+        data = {
+            "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
+            f"{time1}": [
+                dados1["media_gols"], dados1["media_escanteios"],
+                dados1["media_cartoes"], dados1["desfalques"], ult1
+            ],
+            f"{time2}": [
+                dados2["media_gols"], dados2["media_escanteios"],
+                dados2["media_cartoes"], dados2["desfalques"], ult2
+            ]
+        }
+        df = pd.DataFrame(data)
+        st.table(df)  # Ou use st.dataframe(df) se preferir com rolagem no celular
 
         st.subheader("Palpite Gerado")
-
         resultado_md = f"""
 **Vitória provável:** {vencedor}  
 **Placar provável:** {placar}  
@@ -147,4 +141,5 @@ st.table(df)
 
         pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
         st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
+
 
