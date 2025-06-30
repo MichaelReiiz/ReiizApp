@@ -4,8 +4,7 @@ import pandas as pd
 from fpdf import FPDF
 import base64
 
-# ---------- Funções de lógica ---------- #
-
+# Função para simular dados do time
 def simular_dados_do_time(time):
     return {
         "nome": time,
@@ -16,6 +15,7 @@ def simular_dados_do_time(time):
         "desfalques": random.randint(0, 3)
     }
 
+# Função que gera o palpite e a justificativa
 def gerar_palpite(time_a, time_b):
     score_a = (
         time_a["media_gols"] * 2 +
@@ -40,8 +40,7 @@ def gerar_palpite(time_a, time_b):
         vencedor = "Empate"
         placar = f"{random.randint(1, 2)}x{random.randint(1, 2)}"
 
-    justificativa = f"""
-Análise Inteligente:
+    justificativa = f"""Análise Inteligente:
 - {time_a['nome']} → Gols: {time_a['media_gols']}, Escanteios: {time_a['media_escanteios']}, Cartões: {time_a['media_cartoes']}, Desfalques: {time_a['desfalques']}, Score: {round(score_a, 2)}
 - {time_b['nome']} → Gols: {time_b['media_gols']}, Escanteios: {time_b['media_escanteios']}, Cartões: {time_b['media_cartoes']}, Desfalques: {time_b['desfalques']}, Score: {round(score_b, 2)}
 
@@ -49,19 +48,18 @@ Resultado provável com base nas estatísticas: {vencedor}
 """
     return vencedor, placar, justificativa
 
-# ---------- Geração de PDF ---------- #
-
+# Função para gerar PDF
 def gerar_pdf(time1, time2, vencedor, placar, justificativa):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
     pdf.set_text_color(220, 50, 50)
-    pdf.cell(200, 10, "Palpite Gerado por ReiizApp", ln=True, align="C")
+    pdf.cell(0, 10, "Palpite Gerado por ReiizApp", ln=True, align="C")
 
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=12)
 
-    texto_limpo = justificativa.encode("ascii", "ignore").decode("ascii")  # remove emojis/acentos
+    texto_limpo = justificativa.encode("ascii", "ignore").decode("ascii")  # remove emojis e caracteres especiais
 
     pdf.multi_cell(0, 10, f"Jogo: {time1} vs {time2}")
     pdf.multi_cell(0, 10, f"Placar provável: {placar}")
@@ -70,43 +68,73 @@ def gerar_pdf(time1, time2, vencedor, placar, justificativa):
 
     return pdf.output(dest='S').encode('latin1')
 
+# Função para criar link de download do PDF
 def gerar_download_pdf(pdf_data):
     b64 = base64.b64encode(pdf_data).decode()
-    link = f'<a href="data:application/pdf;base64,{b64}" download="palpite_reiizapp.pdf">📄 Baixar Palpite em PDF</a>'
-    return link
+    return f'<a href="data:application/pdf;base64,{b64}" download="palpite_reiizapp.pdf">📄 Baixar Palpite em PDF</a>'
 
-# ---------- Interface com Streamlit ---------- #
-
+# Configurações da página
 st.set_page_config(page_title="ReiizApp", layout="centered")
 
-# CSS para fundo branco e letras cinza escuro
+# Estilo básico com fundo branco e texto cinza escuro
 st.markdown("""
     <style>
         body, .stApp {
             background-color: white !important;
             color: #333333 !important;
         }
-        /* Botão vermelho com texto branco */
         div.stButton > button {
             background-color: #e50914;
             color: white;
-            border-radius: 4px;
+            border-radius: 5px;
             padding: 0.5em 1em;
+            font-weight: bold;
         }
     </style>
 """, unsafe_allow_html=True)
 
+# Cabeçalho
 st.title("ReiizApp – Palpites Esportivos com IA")
-st.markdown("Gere palpites com análise lógica baseada em estatísticas simuladas.")
+st.markdown("Gere palpites baseados em análise lógica de estatísticas simuladas.")
 
-# Entrada dos times
-time1 = st.text_input("Digite o nome do Time 1")
-time2 = st.text_input("Digite o nome do Time 2")
+# Inputs para nomes dos times
+time1 = st.text_input("Digite o nome do Time 1", "")
+time2 = st.text_input("Digite o nome do Time 2", "")
 
-# Botão
+# Botão para gerar palpite
 if st.button("Gerar Palpite"):
-    if not time1 or not time2:
-        st.warning("⚠️ Por favor, digite o nome dos dois times.")
+    if not time1.strip() or not time2.strip():
+        st.warning("⚠️ Por favor, preencha os nomes dos dois times para gerar o palpite.")
     else:
-        dados1 = simular_dados_do_time(time1)
-        dados2 = simular_dado_
+        dados1 = simular_dados_do_time(time1.strip())
+        dados2 = simular_dados_do_time(time2.strip())
+
+        vencedor, placar, justificativa = gerar_palpite(dados1, dados2)
+
+        # Últimos 5 jogos sem emojis para evitar erros no celular
+        ult1 = " ".join(dados1["ultimos_5_jogos"])
+        ult2 = " ".join(dados2["ultimos_5_jogos"])
+
+        st.subheader("Comparativo dos Times")
+        df = pd.DataFrame({
+            "Estatística": ["Gols", "Escanteios", "Cartões", "Desfalques", "Últimos 5 Jogos"],
+            time1: [
+                dados1["media_gols"], dados1["media_escanteios"],
+                dados1["media_cartoes"], dados1["desfalques"], ult1
+            ],
+            time2: [
+                dados2["media_gols"], dados2["media_escanteios"],
+                dados2["media_cartoes"], dados2["desfalques"], ult2
+            ]
+        })
+        st.table(df)
+
+        st.subheader("Palpite Gerado")
+        st.success(f"Vitória provável: {vencedor}")
+        st.info(f"Placar provável: {placar}")
+        st.markdown("**Justificativa do Palpite:**")
+        st.markdown(justificativa)
+
+        # Gerar PDF e exibir link para download
+        pdf_data = gerar_pdf(time1, time2, vencedor, placar, justificativa)
+        st.markdown(gerar_download_pdf(pdf_data), unsafe_allow_html=True)
